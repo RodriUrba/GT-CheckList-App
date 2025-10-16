@@ -1,13 +1,15 @@
-import { Text, View } from "react-native";
+import { Button, Text, View } from "react-native";
 
 import OptionCard from "@/components/option-card";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Octicons from '@expo/vector-icons/Octicons';
+import { useRouter } from "expo-router";
 
 export default function HomeScreen() {
   const iconColor = useThemeColor({}, 'icon');
+  const router = useRouter();
 
   const options = [{
     icon: <Octicons name="checklist" size={24} color={iconColor} />,
@@ -35,6 +37,16 @@ export default function HomeScreen() {
             <OptionCard key={index} icon={option.icon} title={option.title} description="" link="#" />
           ))}
         </View>
+          {/*
+            boton para redireccionar al login
+          */}
+          <View className='mb-4'>
+            <Button title="Iniciar sesión" onPress={() => router.push('../auth')} />
+          </View>
+
+          <View className='absolute inset-x-0 bottom-0'>
+            <Text className='text-center text-gray-500 dark:text-gray-400 mb-4'>Versión 1.0.0</Text>
+          </View>
       </View>
   );
 }
