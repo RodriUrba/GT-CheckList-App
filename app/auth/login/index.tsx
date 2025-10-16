@@ -1,11 +1,44 @@
+import { useAuth } from '@/contexts/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import { ActivityIndicator, Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function LoginScreen() {
     const router = useRouter();
+    const { login, isLoading, error, clearError } = useAuth();
+    
+    const [emailOrUsername, setEmailOrUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleLogin = async () => {
+        // Clear previous errors
+        clearError();
+
+        // Validation
+        if (!emailOrUsername.trim() || !password.trim()) {
+            Alert.alert('Error', 'Por favor, completa todos los campos');
+            return;
+        }
+
+        try {
+            await login({
+                email_or_username: emailOrUsername.trim(),
+                password: password,
+            });
+            // Navigation is handled automatically by AuthContext
+        } catch (err) {
+            // Error is already set in context
+            Alert.alert(
+                'Error de inicio de sesión',
+                error || 'No se pudo iniciar sesión. Verifica tus credenciales.',
+                [{ text: 'OK' }]
+            );
+        }
+    };
 
     return (
         <SafeAreaView className="flex-1 bg-gray-100">
@@ -27,7 +60,7 @@ export default function LoginScreen() {
 
                 {/* Formulario */}
                 <View className="flex-1">
-                    {/* Input Correo electrónico */}
+                    {/* Input Correo electrónico o Usuario */}
                     <View className="mb-4 relative">
                         <Ionicons 
                             name="mail-outline" 
@@ -48,10 +81,13 @@ export default function LoginScreen() {
                                 borderWidth: 0,
                                 color: '#565D6D'
                             }}
-                            placeholder="Correo electrónico"
+                            placeholder="Correo electrónico o usuario"
                             placeholderTextColor="#9CA3AF"
                             keyboardType="email-address"
                             autoCapitalize="none"
+                            value={emailOrUsername}
+                            onChangeText={setEmailOrUsername}
+                            editable={!isLoading}
                         />
                     </View>
 
@@ -67,7 +103,7 @@ export default function LoginScreen() {
                             style={{
                                 height: 52,
                                 paddingLeft: 34,
-                                paddingRight: 12,
+                                paddingRight: 44,
                                 fontSize: 16,
                                 lineHeight: 26,
                                 fontWeight: '400',
@@ -77,27 +113,54 @@ export default function LoginScreen() {
                                 color: '#565D6D'
                             }}
                             placeholder="Contraseña"
-                            secureTextEntry
+                            secureTextEntry={!showPassword}
                             placeholderTextColor="#9CA3AF"
                             autoCapitalize="none"
+                            value={password}
+                            onChangeText={setPassword}
+                            editable={!isLoading}
                         />
+                        <TouchableOpacity
+                            style={{ position: 'absolute', right: 12, top: 18, zIndex: 10 }}
+                            onPress={() => setShowPassword(!showPassword)}
+                            disabled={isLoading}
+                        >
+                            <Ionicons 
+                                name={showPassword ? "eye-off-outline" : "eye-outline"} 
+                                size={20} 
+                                color="#565D6D" 
+                            />
+                        </TouchableOpacity>
                     </View>
 
                     {/* Olvidaste tu contraseña */}
-                    <TouchableOpacity style={{ marginBottom: 116 }}>
+                    <TouchableOpacity 
+                        style={{ marginBottom: 116 }}
+                        disabled={isLoading}
+                    >
                         <Text className="text-cyan-500 text-right text-sm">¿Olvidaste tu contraseña?</Text>
                     </TouchableOpacity>
 
                     {/* Botón Iniciar sesión */}
                     <TouchableOpacity 
                         className="bg-cyan-500 rounded-xl p-4 mb-4 items-center shadow-sm" 
-                        onPress={() => router.replace('/(tabs)')}
+                        onPress={handleLogin}
+                        disabled={isLoading}
+                        style={{ opacity: isLoading ? 0.6 : 1 }}
                     >
-                        <Text className="text-white text-base font-semibold">Iniciar sesión</Text>
+                        {isLoading ? (
+                            <ActivityIndicator color="#FFFFFF" />
+                        ) : (
+                            <Text className="text-white text-base font-semibold">Iniciar sesión</Text>
+                        )}
                     </TouchableOpacity>
 
                     {/* Botón Crear cuenta */}
-                    <TouchableOpacity className="bg-white border-2 border-cyan-500 rounded-xl p-4 items-center shadow-sm">
+                    <TouchableOpacity 
+                        className="bg-white border-2 border-cyan-500 rounded-xl p-4 items-center shadow-sm"
+                        disabled={isLoading}
+                        style={{ opacity: isLoading ? 0.6 : 1 }}
+                    >
                         <Text className="text-cyan-500 text-base font-semibold">Crear cuenta</Text>
                     </TouchableOpacity>
                 </View>
