@@ -3,7 +3,7 @@ import React, { createContext, ReactNode, useContext, useEffect, useState } from
 import { AuthLoadingScreen } from '../components/auth-loading-screen';
 import { apiClient } from '../services/api.service';
 import { TokenService } from '../services/token.service';
-import type { ErrorResponse, LoginRequest, User } from '../types/api';
+import type { ErrorResponse, LoginRequest, RegisterRequest, User } from '../types/api';
 
 interface AuthContextType {
   user: User | null;
@@ -14,6 +14,7 @@ interface AuthContextType {
   refreshUser: () => Promise<void>;
   error: string | null;
   clearError: () => void;
+  register: (credentials: RegisterRequest) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,6 +29,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const segments = useSegments();
+  const [registrationSuccess, setRegistrationSuccess] = useState<boolean>(false);
 
   const isAuthenticated = !!user;
 
@@ -83,13 +85,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const response = await apiClient.login(credentials);
       setUser(response.user);
       
-      // Navigation will be handled by the useEffect hook
     } catch (err) {
       const errorResponse = err as ErrorResponse;
       const errorMessage = typeof errorResponse.detail === 'string' 
         ? errorResponse.detail 
         : 'Error al iniciar sesión. Verifica tus credenciales.';
       
+      setError(errorMessage);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const register = async (credentials: RegisterRequest) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await apiClient.register(credentials);
+      setRegistrationSuccess(true);
+    } catch (err) {
+      const errorResponse = err as ErrorResponse;
+      const errorMessage = typeof errorResponse.detail === 'string' 
+        ? errorResponse.detail 
+        : 'Error al registrar el usuario. Verifica tus datos.'; 
       setError(errorMessage);
       throw err;
     } finally {
@@ -147,6 +166,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     refreshUser,
     error,
     clearError,
+    register,
   };
 
   // Show loading screen while initializing
