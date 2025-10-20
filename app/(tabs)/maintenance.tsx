@@ -2,8 +2,8 @@ import BuildingCard from '@/components/building-card';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScrollView, View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import DefaultHeader from '../../components/default-header';
 import { Router } from 'expo-router';
+import DefaultHeader from '@/components/default-header';
 
 const buildings = [
         { id: '1', initial: 'C', name: 'Centro Empresarial Leuro' },
@@ -77,4 +77,3 @@ export default function MaintenanceScreen() {
         </SafeAreaView>
     );
 }
-// removed extraneous closing brace
