@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 
 interface BuildingCardProps {
     initial: string;
@@ -10,42 +10,20 @@ interface BuildingCardProps {
 export default function BuildingCard({ initial, name, onPress }: BuildingCardProps) {
     return (
         <TouchableOpacity
-            style={{
-                height: 60,
-                backgroundColor: '#FFFFFF',
-                borderRadius: 10,
-                marginBottom: 16,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                paddingHorizontal: 16,
-                shadowColor: '#171a1f',
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 0.08,
-                shadowRadius: 2,
-                elevation: 2,
-            }}
+            style={styles.container}
             onPress={onPress}
             activeOpacity={0.7}
         >
-            <View className="flex-row items-center flex-1">
+            <View>
                 {/* Avatar circular con inicial */}
                 <View 
-                    style={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: 20,
-                        backgroundColor: '#06B6D4',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginRight: 16
-                    }}
+                    style={styles.avatar}
                 >
-                    <Text className="text-white text-lg font-semibold">
+                    <Text>
                         {initial}
                     </Text>
                 </View>
-                <Text className="text-base font-normal text-gray-900 flex-1">
+                <Text style={styles.nameText}>
                     {name}
                 </Text>
             </View>
@@ -53,3 +31,33 @@ export default function BuildingCard({ initial, name, onPress }: BuildingCardPro
         </TouchableOpacity>
     );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    height: 60,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    shadowColor: '#171a1f',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#06B6D4',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  nameText: {
+    marginTop: 4,
+  },
+});

@@ -1,31 +1,39 @@
-import { useRouter } from 'expo-router';
-import { ScrollView, View } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { ScrollView, View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import DefaultHeader from '../../components/default-header';
-import MaintenanceCard from '../../components/maintenance-card';
+import { useState, useEffect } from 'react';
+import DefaultHeader from '@/components/default-header';
+import MaintenanceCard from '@/components/maintenance-card';
 
 export default function SelectDeviceScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const [building, setBuilding] = useState<any>(null);
+
+  useEffect(() => {
+    if (params.building) {
+      try {
+        setBuilding(JSON.parse(params.building as string));
+      } catch {}
+    }
+  }, [params.building]);
 
   const handleOptionPress = (type: string, title: string) => {
     console.log('Selected maintenance type:', title);
-    router.push({
-      pathname: '/maintenance/select-building',
-      params: { type: title }
-    });
+      console.log('Building:', building);
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-100">
-      <ScrollView className="flex-1">
+    <SafeAreaView style={styles.container}>
+      <ScrollView>
         {/* Header */}
         <DefaultHeader
-          title="Mantenimiento"
+          title={building ? `Mantenimiento - ${building.name}` : 'Mantenimiento'}
           searchPlaceholder="Buscar equipos"
         />
 
         {/* Lista de opciones - margen top: 16px, padding horizontal: 24px */}
-        <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 24 }}>
+        <View style={styles.listWrapper}>
           <MaintenanceCard
             icon="construct-outline"
             title="Pozo a tierra"
@@ -51,3 +59,15 @@ export default function SelectDeviceScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F3F4F6',
+  },
+  listWrapper: {
+    paddingHorizontal: 24,
+    paddingTop: 16,
+    paddingBottom: 24,
+  },
+});

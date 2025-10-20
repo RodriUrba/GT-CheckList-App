@@ -46,10 +46,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     if (!isAuthenticated && !inAuthGroup) {
       // Redirect to login if not authenticated and trying to access protected routes
-      router.replace('/auth/login');
+      setTimeout(() => router.replace('/auth/login'), 100);
     } else if (isAuthenticated && inAuthGroup) {
       // Redirect to main app if authenticated and on auth pages
-      router.replace('/(tabs)');
+      setTimeout(() => router.replace('/(tabs)'), 100);
     }
   }, [isAuthenticated, segments, isLoading]);
 

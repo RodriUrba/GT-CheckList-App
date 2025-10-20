@@ -43,15 +43,15 @@ export default function RegisterScreen() {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-gray-100">
-            <View className="flex-1 px-6 py-8">
+        <SafeAreaView>
+            <View>
                 {/* Header */}
-                <View className="items-center justify-center pt-2 pb-6">
-                    <Text className="text-black text-xl font-normal">Bienvenido a</Text>
+                <View>
+                    <Text>Bienvenido a</Text>
                 </View>
 
                 {/* Logo */}
-                <View className="items-center justify-center mb-8 h-56">
+                <View>
                     <Image
                         style={{ width: 283, height: 100, paddingLeft:19, paddingRight:19 }}
                         source={require('../../../assets/logo/image.png')}
@@ -61,12 +61,12 @@ export default function RegisterScreen() {
                 </View>
 
                 {/* Formulario */}
-                <View className="flex-1">
+                <View>
                     {/* Input Correo electrónico */}
-                    <View className="mb-4 relative">
-                        <Ionicons 
-                            name="mail-outline" 
-                            size={16} 
+                    <View>
+                        <Ionicons
+                            name="mail-outline"
+                            size={16}
                             color="#565D6D" 
                             style={{ position: 'absolute', left: 12, top: 18, zIndex: 10 }} 
                         />
@@ -94,7 +94,7 @@ export default function RegisterScreen() {
                     </View>
 
                     {/* Input Nombre de usuario */}
-                    <View className="mb-4 relative">
+                    <View>
                         <Ionicons 
                             name="mail-outline" 
                             size={16} 
@@ -125,12 +125,12 @@ export default function RegisterScreen() {
                     </View>
 
                     {/* Input Contraseña */}
-                    <View className="mb-3 relative">
-                        <Ionicons 
-                            name="lock-closed-outline" 
-                            size={16} 
-                            color="#565D6D" 
-                            style={{ position: 'absolute', left: 12, top: 18, zIndex: 10 }} 
+                    <View>
+                        <Ionicons
+                            name="lock-closed-outline"
+                            size={16}
+                            color="#565D6D"
+                            style={{ position: 'absolute', left: 12, top: 18, zIndex: 10 }}
                         />
                         <TextInput
                             style={{
@@ -171,11 +171,10 @@ export default function RegisterScreen() {
                         style={{ marginBottom: 116 }}
                         disabled={isLoading}
                     >
-                        <Text className="text-cyan-500 text-right text-sm">¿Olvidaste tu contraseña?</Text>
+                        <Text>¿Olvidaste tu contraseña?</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity 
-                        className="bg-cyan-500 rounded-xl p-4 mb-4 items-center shadow-sm" 
                         onPress={handleRegister}
                         disabled={isLoading}
                         style={{ opacity: isLoading ? 0.6 : 1 }}
@@ -183,16 +182,15 @@ export default function RegisterScreen() {
                         {isLoading ? (
                             <ActivityIndicator color="#FFFFFF" />
                         ) : (
-                            <Text className="text-white text-base font-semibold">Crear cuenta</Text>
+                            <Text>Crear cuenta</Text>
                         )}
                     </TouchableOpacity>
 
                     <TouchableOpacity 
-                        className="bg-white border-2 border-cyan-500 rounded-xl p-4 items-center shadow-sm"
                         disabled={isLoading}
                         style={{ opacity: isLoading ? 0.6 : 1 }}
                     >
-                        <Text className="text-cyan-500 text-base font-semibold">Iniciar sesión</Text>
+                        <Text>Iniciar sesión</Text>
                     </TouchableOpacity>
                 </View>
             </View>

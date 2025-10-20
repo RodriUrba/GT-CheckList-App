@@ -1,25 +1,17 @@
 {
   "expo": {
-    "name": "GT CheckList",
-    "slug": "GT-CheckList",
-    "version": "0.0.1",
+    "name": "alexperto-checklist-app",
+    "slug": "alexperto-checklist-app",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "gtchecklistapp",
+    "scheme": "alexpertochecklistapp",
     "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true,
-      "infoPlist": {
-        "NSCameraUsageDescription": "Esta aplicación necesita acceso a la cámara para escanear códigos QR.",
-        "NSMicrophoneUsageDescription": "Esta aplicación necesita acceso al micrófono."
-      }
+      "supportsTablet": true
     },
     "android": {
-      "package": "pe.rems.gtchecklistapp",
-      "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO"
-      ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -27,11 +19,11 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.drcistaf.alexpertochecklistapp"
     },
     "web": {
       "output": "static",
-      "bundler": "metro",
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
@@ -48,24 +40,11 @@
           }
         }
       ],
-      [
-        "expo-camera",
-        {
-          "cameraPermission": "$(PRODUCT_NAME) necesita acceso a la cámara para escanear códigos QR.",
-          "microphonePermission": "$(PRODUCT_NAME) necesita acceso al micrófono.",
-          "recordAudioAndroid": false
-        }
-      ]
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    },
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "c9e87a24-aabf-4689-b6a9-0673daa1898e"
-      }
     }
   }
 }
