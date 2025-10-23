@@ -1,7 +1,7 @@
 import { useRouter, useSegments } from 'expo-router';
 import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { AuthLoadingScreen } from '../components/auth-loading-screen';
-import { apiClient } from '../services/api.service';
+import { useCurrentUser, useLogin, useLogout, useRegister } from '../hooks/use-auth-query';
 import { TokenService } from '../services/token.service';
 import type { ErrorResponse, LoginRequest, RegisterRequest, User } from '../types/api';
 
@@ -24,14 +24,20 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [hasTokens, setHasTokens] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const segments = useSegments();
-  const [registrationSuccess, setRegistrationSuccess] = useState<boolean>(false);
 
-  const isAuthenticated = !!user;
+  // React Query hooks
+  const loginMutation = useLogin();
+  const registerMutation = useRegister();
+  const logoutMutation = useLogout();
+  const { data: user, isLoading: isLoadingUser, refetch: refetchUser } = useCurrentUser(hasTokens);
+
+  const isLoading = !isInitialized || isLoadingUser || loginMutation.isPending || logoutMutation.isPending || registerMutation.isPending;
+  const isAuthenticated = !!user && hasTokens;
 
   // Initialize auth state on mount
   useEffect(() => {
@@ -40,7 +46,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Handle route protection
   useEffect(() => {
-    if (isLoading) return;
+    if (!isInitialized) return;
 
     const inAuthGroup = segments[0] === 'auth';
 
@@ -51,26 +57,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Redirect to main app if authenticated and on auth pages
       setTimeout(() => router.replace('/(tabs)'), 100);
     }
-  }, [isAuthenticated, segments, isLoading]);
+  }, [isAuthenticated, segments, isInitialized]);
 
   /**
    * Initialize authentication state
    */
   const initializeAuth = async () => {
     try {
-      const hasTokens = await TokenService.hasTokens();
+      const tokensExist = await TokenService.hasTokens();
+      setHasTokens(tokensExist);
       
-      if (hasTokens) {
-        // Try to get current user
-        const userData = await apiClient.getCurrentUser();
-        setUser(userData);
+      if (tokensExist) {
+        // React Query will automatically fetch user data
+        await refetchUser();
       }
     } catch (err) {
       console.error('Failed to initialize auth:', err);
       // Clear invalid tokens
       await TokenService.clearTokens();
+      setHasTokens(false);
     } finally {
-      setIsLoading(false);
+      setIsInitialized(true);
     }
   };
 
@@ -79,12 +86,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
    */
   const login = async (credentials: LoginRequest) => {
     try {
-      setIsLoading(true);
       setError(null);
-
-      const response = await apiClient.login(credentials);
-      setUser(response.user);
       
+      const response = await loginMutation.mutateAsync(credentials);
+      setHasTokens(true);
+      
+      // User data is automatically updated by React Query
     } catch (err) {
       const errorResponse = err as ErrorResponse;
       const errorMessage = typeof errorResponse.detail === 'string' 
@@ -93,17 +100,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       setError(errorMessage);
       throw err;
-    } finally {
-      setIsLoading(false);
     }
   };
 
+  /**
+   * Register user
+   */
   const register = async (credentials: RegisterRequest) => {
     try {
-      setIsLoading(true);
       setError(null);
-      const response = await apiClient.register(credentials);
-      setRegistrationSuccess(true);
+      await registerMutation.mutateAsync(credentials);
     } catch (err) {
       const errorResponse = err as ErrorResponse;
       const errorMessage = typeof errorResponse.detail === 'string' 
@@ -111,8 +117,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         : 'Error al registrar el usuario. Verifica tus datos.'; 
       setError(errorMessage);
       throw err;
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -121,17 +125,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
    */
   const logout = async () => {
     try {
-      setIsLoading(true);
-      await apiClient.logout();
-      setUser(null);
+      await logoutMutation.mutateAsync();
+      setHasTokens(false);
       
       // Navigation will be handled by the useEffect hook
     } catch (err) {
       console.error('Logout error:', err);
-      // Clear user anyway
-      setUser(null);
-    } finally {
-      setIsLoading(false);
+      // Clear tokens anyway
+      setHasTokens(false);
+      await TokenService.clearTokens();
     }
   };
 
@@ -140,12 +142,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
    */
   const refreshUser = async () => {
     try {
-      const userData = await apiClient.getCurrentUser();
-      setUser(userData);
+      await refetchUser();
     } catch (err) {
       console.error('Failed to refresh user:', err);
       // If refresh fails, user might be logged out
-      setUser(null);
+      setHasTokens(false);
       await TokenService.clearTokens();
     }
   };
@@ -158,7 +159,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const value: AuthContextType = {
-    user,
+    user: user || null,
     isLoading,
     isAuthenticated,
     login,
@@ -170,7 +171,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   // Show loading screen while initializing
-  if (isLoading) {
+  if (!isInitialized) {
     return <AuthLoadingScreen />;
   }
 
