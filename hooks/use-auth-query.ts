@@ -1,24 +1,32 @@
-import { useMutation, useQuery, useQueryClient, type UseMutationResult, type UseQueryResult } from '@tanstack/react-query';
-import { authApi } from '../services/auth.api';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type UseMutationResult,
+  type UseQueryResult,
+} from "@tanstack/react-query";
+import { authApi } from "../services/auth.api";
 import type {
   ErrorResponse,
   LoginRequest,
   RegisterRequest,
   TokenResponse,
   UserResponse,
-} from '../types/api';
+} from "../types/api";
 
 // Query Keys
 export const authKeys = {
-  all: ['auth'] as const,
-  currentUser: () => [...authKeys.all, 'current-user'] as const,
-  verify: () => [...authKeys.all, 'verify'] as const,
+  all: ["auth"] as const,
+  currentUser: () => [...authKeys.all, "current-user"] as const,
+  verify: () => [...authKeys.all, "verify"] as const,
 };
 
 /**
  * Hook to get current user
  */
-export function useCurrentUser(enabled = true): UseQueryResult<UserResponse, ErrorResponse> {
+export function useCurrentUser(
+  enabled = true,
+): UseQueryResult<UserResponse, ErrorResponse> {
   return useQuery({
     queryKey: authKeys.currentUser(),
     queryFn: authApi.getCurrentUser,
@@ -31,7 +39,9 @@ export function useCurrentUser(enabled = true): UseQueryResult<UserResponse, Err
 /**
  * Hook to verify token
  */
-export function useVerifyToken(enabled = true): UseQueryResult<boolean, ErrorResponse> {
+export function useVerifyToken(
+  enabled = true,
+): UseQueryResult<boolean, ErrorResponse> {
   return useQuery({
     queryKey: authKeys.verify(),
     queryFn: authApi.verifyToken,
@@ -44,7 +54,11 @@ export function useVerifyToken(enabled = true): UseQueryResult<boolean, ErrorRes
 /**
  * Hook to login
  */
-export function useLogin(): UseMutationResult<TokenResponse, ErrorResponse, LoginRequest> {
+export function useLogin(): UseMutationResult<
+  TokenResponse,
+  ErrorResponse,
+  LoginRequest
+> {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -61,7 +75,11 @@ export function useLogin(): UseMutationResult<TokenResponse, ErrorResponse, Logi
 /**
  * Hook to register
  */
-export function useRegister(): UseMutationResult<UserResponse, ErrorResponse, RegisterRequest> {
+export function useRegister(): UseMutationResult<
+  UserResponse,
+  ErrorResponse,
+  RegisterRequest
+> {
   return useMutation({
     mutationFn: authApi.register,
   });
@@ -85,7 +103,11 @@ export function useLogout(): UseMutationResult<void, ErrorResponse, void> {
 /**
  * Hook to refresh token
  */
-export function useRefreshToken(): UseMutationResult<TokenResponse, ErrorResponse, string> {
+export function useRefreshToken(): UseMutationResult<
+  TokenResponse,
+  ErrorResponse,
+  string
+> {
   const queryClient = useQueryClient();
 
   return useMutation({
