@@ -17,9 +17,13 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useNetworkState } from "expo-network";
+
 export default function LoginScreen() {
   const router = useRouter();
   const { login, isLoading, error, clearError } = useAuth();
+
+  const networkState = useNetworkState();
 
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -136,6 +140,13 @@ export default function LoginScreen() {
               <Text style={styles.secondaryButtonText}>Crear cuenta</Text>
             </TouchableOpacity>
           </View>
+        </View>
+        <View style={{ height: 16, alignItems: "center" }}>
+          <Text style={{ color: Colors.light.text, fontSize: 12 }}>
+            {networkState.isConnected
+              ? "Conexión a internet"
+              : "Sin conexión a internet"}
+          </Text>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
