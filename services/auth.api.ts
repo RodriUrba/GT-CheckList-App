@@ -1,12 +1,12 @@
-import { API_CONFIG } from '../config/api';
-import { httpClient } from '../lib/http-client';
-import { TokenService } from './token.service';
+import { API_CONFIG } from "../config/api";
+import { httpClient } from "../lib/http-client";
+import { TokenService } from "./token.service";
 import type {
   LoginRequest,
   RegisterRequest,
   TokenResponse,
   UserResponse,
-} from '../types/api';
+} from "../types/api";
 
 /**
  * Authentication API Service
@@ -20,13 +20,13 @@ export const authApi = {
     try {
       const response = await httpClient.post<TokenResponse>(
         API_CONFIG.ENDPOINTS.AUTH.LOGIN,
-        credentials
+        credentials,
       );
-      
+
       // Save tokens
       const { access_token, refresh_token } = response;
       await TokenService.saveTokens(access_token, refresh_token);
-      
+
       return response;
     } catch (error) {
       throw httpClient.handleError(error);
@@ -40,7 +40,7 @@ export const authApi = {
     try {
       const response = await httpClient.post<UserResponse>(
         API_CONFIG.ENDPOINTS.AUTH.REGISTER,
-        data
+        data,
       );
       return response;
     } catch (error) {
@@ -56,7 +56,7 @@ export const authApi = {
       await httpClient.post(API_CONFIG.ENDPOINTS.AUTH.LOGOUT);
     } catch (error) {
       // Continue with logout even if API call fails
-      console.error('Logout API error:', error);
+      console.error("Logout API error:", error);
     } finally {
       await TokenService.clearTokens();
     }
@@ -68,7 +68,7 @@ export const authApi = {
   getCurrentUser: async (): Promise<UserResponse> => {
     try {
       const response = await httpClient.get<UserResponse>(
-        API_CONFIG.ENDPOINTS.AUTH.ME
+        API_CONFIG.ENDPOINTS.AUTH.ME,
       );
       return response;
     } catch (error) {
@@ -95,12 +95,12 @@ export const authApi = {
     try {
       const response = await httpClient.post<TokenResponse>(
         API_CONFIG.ENDPOINTS.AUTH.REFRESH,
-        { refresh_token: refreshToken }
+        { refresh_token: refreshToken },
       );
-      
+
       const { access_token, refresh_token } = response;
       await TokenService.saveTokens(access_token, refresh_token);
-      
+
       return response;
     } catch (error) {
       throw httpClient.handleError(error);
