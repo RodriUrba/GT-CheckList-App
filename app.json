@@ -17,9 +17,12 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.drcistaf.alexpertochecklistapp",
+      "package": "pe.rems.alexpertochecklistapp",
       "usesCleartextTraffic": true,
-      "permissions": ["android.permission.INTERNET"]
+      "permissions": ["android.permission.INTERNET"],
+      "compileSdkVersion": 35,
+      "targetSdkVersion": 35,
+      "minSdkVersion": 23
     },
     "ios": {
       "supportsTablet": true,
