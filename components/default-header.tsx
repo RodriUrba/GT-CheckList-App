@@ -6,9 +6,10 @@ import { Text, TextInput, View, StyleSheet } from 'react-native';
 interface DefaultHeaderProps {
     title: string;
     searchPlaceholder: string;
+    shouldShowBackButton?: boolean;
 }
 
-export default function DefaultHeader({ title, searchPlaceholder }: DefaultHeaderProps) {
+export default function DefaultHeader({ title, searchPlaceholder, shouldShowBackButton = true }: DefaultHeaderProps) {
     const router = useRouter();
     return (
         <View style={styles.container}>
@@ -45,6 +46,7 @@ export default function DefaultHeader({ title, searchPlaceholder }: DefaultHeade
                 </View>
             </View>
             {/** Boton para regresar usando el router */}
+            {shouldShowBackButton && (
             <View style={styles.backButton}>
                 <Ionicons
                     name="arrow-back"
@@ -53,6 +55,7 @@ export default function DefaultHeader({ title, searchPlaceholder }: DefaultHeade
                     onPress={() => router.back()}
                 />
             </View>
+            )}
         </View>
     );
 }

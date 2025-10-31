@@ -57,6 +57,7 @@ export default function MaintenanceScreen() {
                     <DefaultHeader
                         title="¿Qué inmueble deseas gestionar?"
                         searchPlaceholder="Buscar inmuebles"
+                        shouldShowBackButton={false}
                     />
                 </View>
 
