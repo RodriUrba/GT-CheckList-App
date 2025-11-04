@@ -37,11 +37,14 @@ class HttpClient {
    * Setup request and response interceptors
    */
   private setupInterceptors(): void {
-    // Request interceptor - add auth token
+    // Request interceptor - add auth token, skip for refresh endpoint
     this.axiosInstance.interceptors.request.use(
       async (config: InternalAxiosRequestConfig) => {
+        const isRefreshEndpoint = (config.url ?? "").includes(
+          API_CONFIG.ENDPOINTS.AUTH.REFRESH,
+        );
         const token = await TokenService.getAccessToken();
-        if (token && config.headers) {
+        if (!isRefreshEndpoint && token && config.headers) {
           config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
@@ -61,6 +64,23 @@ class HttpClient {
 
         // If error is 401 and we haven't tried to refresh yet
         if (error.response?.status === 401 && !originalRequest._retry) {
+          const isRefreshEndpoint = (originalRequest.url ?? "").includes(
+            API_CONFIG.ENDPOINTS.AUTH.REFRESH,
+          );
+
+          // If the failing request is the refresh itself, do NOT retry or queue; clear session and redirect
+          if (isRefreshEndpoint) {
+            try {
+              await TokenService.clearTokens();
+              authEvents.emitAuthFailure();
+            } catch (e) {
+              // no-op
+            } finally {
+              this.isRefreshing = false;
+            }
+            return Promise.reject(error);
+          }
+
           if (this.isRefreshing) {
             // Wait for the refresh to complete
             return new Promise((resolve, reject) => {
