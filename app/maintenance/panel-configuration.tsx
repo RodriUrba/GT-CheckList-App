@@ -118,7 +118,7 @@ export default function PanelConfigurationScreen() {
     if (step === 4) {
       // Simulate save and go back
       Alert.alert('Configuración guardada', 'El equipo ha sido configurado correctamente.', [
-        { text: 'OK', onPress: () => router.back() },
+        { text: 'OK', onPress: () => router.push('/maintenance/extra-equipment') },
       ]);
     }
   };
